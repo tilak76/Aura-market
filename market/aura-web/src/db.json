@@ -5197,9 +5197,9 @@
       "jss218": "·",
       "jss219": "Up to 50% off",
       "jss217": "",
-      "img1": "https://loremflickr.com/500/700/women,fashion,dress?lock=5000",
-      "img2": "https://loremflickr.com/500/700/women,fashion,model?lock=15000",
-      "img3": "https://loremflickr.com/500/700/women,clothing,style?lock=25000"
+      "img1": "/src/assets/dresses/dress1.png",
+      "img2": "/src/assets/dresses/dress1.png",
+      "img3": "/src/assets/dresses/dress1.png"
     },
     {
       "jss11 href": "https://www.ems.com/ems-womens-highland-midaxi-dress/36154500021.html",
@@ -5212,9 +5212,9 @@
       "jss218": "·",
       "jss219": "71% off",
       "jss217": "69.99",
-      "img1": "https://loremflickr.com/500/700/women,fashion,dress?lock=5001",
-      "img2": "https://loremflickr.com/500/700/women,fashion,model?lock=15001",
-      "img3": "https://loremflickr.com/500/700/women,clothing,style?lock=25001"
+      "img1": "/src/assets/dresses/dress2.png",
+      "img2": "/src/assets/dresses/dress2.png",
+      "img3": "/src/assets/dresses/dress2.png"
     },
     {
       "jss11 href": "https://www.ems.com/ems-womens-softspun-tank-top/36077000021.html",
@@ -5227,9 +5227,9 @@
       "jss218": "·",
       "jss219": "50% off",
       "jss217": "34.99",
-      "img1": "https://loremflickr.com/500/700/women,fashion,dress?lock=5002",
-      "img2": "https://loremflickr.com/500/700/women,fashion,model?lock=15002",
-      "img3": "https://loremflickr.com/500/700/women,clothing,style?lock=25002"
+      "img1": "/src/assets/dresses/dress3.png",
+      "img2": "/src/assets/dresses/dress3.png",
+      "img3": "/src/assets/dresses/dress3.png"
     },
     {
       "jss11 href": "https://www.ems.com/ems-womens-5-softspun-shorts/36077100021.html",
@@ -5242,9 +5242,9 @@
       "jss218": "·",
       "jss219": "50% off",
       "jss217": "34.99",
-      "img1": "https://loremflickr.com/500/700/women,fashion,dress?lock=5003",
-      "img2": "https://loremflickr.com/500/700/women,fashion,model?lock=15003",
-      "img3": "https://loremflickr.com/500/700/women,clothing,style?lock=25003"
+      "img1": "/src/assets/dresses/dress4.png",
+      "img2": "/src/assets/dresses/dress4.png",
+      "img3": "/src/assets/dresses/dress4.png"
     },
     {
       "jss11 href": "https://www.ems.com/ems-womens-sat-nam-dress/36076200027.html",
@@ -5257,9 +5257,9 @@
       "jss218": "·",
       "jss219": "60% off",
       "jss217": "79.99",
-      "img1": "https://loremflickr.com/500/700/women,fashion,dress?lock=5004",
-      "img2": "https://loremflickr.com/500/700/women,fashion,model?lock=15004",
-      "img3": "https://loremflickr.com/500/700/women,clothing,style?lock=25004"
+      "img1": "/src/assets/dresses/dress5.png",
+      "img2": "/src/assets/dresses/dress5.png",
+      "img3": "/src/assets/dresses/dress5.png"
     },
     {
       "jss11 href": "https://www.ems.com/ems-womens-elemental-active-shorts/35474600028.html",

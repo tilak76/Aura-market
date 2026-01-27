@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, ShoppingBag, User, Menu, X } from 'lucide-react';
+import { Search, ShoppingBag, User, Menu, X, MapPin, LayoutDashboard } from 'lucide-react';
 import { useShop } from '../../context/ShopContext';
 import AuthModal from '../UI/AuthModal';
 import styles from './Navbar.module.css';
 
 const Navbar = () => {
-    const { cart, searchQuery, setSearchQuery, searchResults, addToCart, setIsCartOpen } = useShop();
+    const { cart, searchQuery, setSearchQuery, searchResults, setIsCartOpen, userRole } = useShop();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isAuthOpen, setIsAuthOpen] = useState(false);
     const navigate = useNavigate();
@@ -36,6 +36,9 @@ const Navbar = () => {
                         <Link to="/womens" className={styles.link}>WOMEN'S COUTURE</Link>
                         <Link to="/kids" className={styles.link}>JUNIOR EDITION</Link>
                         <Link to="/outdoor" className={styles.link}>OUTDOOR GEAR</Link>
+                        <Link to="/stores" className={styles.link} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                            <MapPin size={16} /> STORES
+                        </Link>
                     </div>
 
                     {/* Actions */}
@@ -67,7 +70,7 @@ const Navbar = () => {
                                                 <img src={item.img1} alt="" />
                                                 <div>
                                                     <p className={styles.resultTitle}>{item.title}</p>
-                                                    <p className={styles.resultPrice}>${item.price}</p>
+                                                    <p className={styles.resultPrice}>₹{item.price}</p>
                                                 </div>
                                             </div>
                                         ))
@@ -77,6 +80,13 @@ const Navbar = () => {
                                 </div>
                             )}
                         </div>
+
+                        {/* Admin Link only for admins */}
+                        {userRole === 'admin' && (
+                            <Link to="/admin" className={styles.actionBtn} title="Admin Dashboard">
+                                <LayoutDashboard size={20} />
+                            </Link>
+                        )}
 
                         <button className={styles.actionBtn} onClick={() => setIsAuthOpen(true)}>
                             <User size={20} />

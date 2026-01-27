@@ -1,15 +1,21 @@
+// ... types removed
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import db from '../db.json';
 
 const ShopContext = createContext();
 
-export const useShop = () => useContext(ShopContext);
+export const useShop = () => {
+  const context = useContext(ShopContext);
+  if (!context) throw new Error("useShop must be used within a ShopProvider");
+  return context;
+}
 
 export const ShopProvider = ({ children }) => {
   const [products, setProducts] = useState({
     mens: [],
     womens: [],
     kids: [],
+    camping: [],
     accessories: [],
     footwear: []
   });
@@ -17,40 +23,44 @@ export const ShopProvider = ({ children }) => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
+  const [userRole, setUserRole] = useState(localStorage.getItem('role') || 'user');
 
   useEffect(() => {
-    // Load data from db.json
-    // db.json structure is expected to have keys like 'mens', 'womens', etc.
-    // If keys are missing, we fallback to empty arrays to prevent crashes.
+    const data = db;
     setProducts({
-      mens: db.mens || [],
-      womens: db.womens || [],
-      kids: db.kids || [],
-      camping: db.camping || [],
+      mens: data.mens || [],
+      womens: data.womens || [],
+      kids: data.kids || [],
+      camping: data.camping || [],
+      accessories: [],
+      footwear: []
     });
   }, []);
 
-  // Cart Functions
-  const addToCart = (product) => {
+  const addToCart = (product, size, quantity = 1) => {
     setCart(prev => {
-      const existing = prev.find(item => item.title === product.title); // Using title as ID if no unique ID
+      // Create a unique key based on title AND size
+      const existing = prev.find(item => item.title === product.title && item.size === size);
+
       if (existing) {
         return prev.map(item =>
-          item.title === product.title ? { ...item, qty: item.qty + 1 } : item
+          (item.title === product.title && item.size === size)
+            ? { ...item, qty: item.qty + quantity }
+            : item
         );
       }
-      return [...prev, { ...product, qty: 1 }];
+      return [...prev, { ...product, size, qty: quantity }];
     });
     setIsCartOpen(true);
   };
 
-  const removeFromCart = (title) => {
-    setCart(prev => prev.filter(item => item.title !== title));
+  const removeFromCart = (title, size) => {
+    setCart(prev => prev.filter(item => !(item.title === title && item.size === size)));
   };
 
-  const updateQty = (title, delta) => {
+  const updateQty = (title, size, delta) => {
     setCart(prev => prev.map(item => {
-      if (item.title === title) {
+      if (item.title === title && item.size === size) {
         const newQty = Math.max(1, item.qty + delta);
         return { ...item, qty: newQty };
       }
@@ -59,11 +69,12 @@ export const ShopProvider = ({ children }) => {
   };
 
   const cartTotal = cart.reduce((acc, item) => {
-    const price = parseFloat(item.price) || 0;
+    const price = typeof item.price === 'string'
+      ? parseFloat(item.price.replace('$', ''))
+      : item.price;
     return acc + (price * item.qty);
   }, 0);
 
-  // Search Function (Smart Search)
   useEffect(() => {
     if (!searchQuery.trim()) {
       setSearchResults([]);
@@ -74,7 +85,8 @@ export const ShopProvider = ({ children }) => {
     const allProducts = [
       ...products.mens,
       ...products.womens,
-      ...products.kids
+      ...products.kids,
+      ...products.camping
     ];
 
     const results = allProducts.filter(p =>
@@ -82,7 +94,7 @@ export const ShopProvider = ({ children }) => {
       p.title2?.toLowerCase().includes(query)
     );
 
-    setSearchResults(results.slice(0, 5)); // Limit to top 5
+    setSearchResults(results.slice(0, 5));
   }, [searchQuery, products]);
 
   return (
@@ -97,7 +109,10 @@ export const ShopProvider = ({ children }) => {
       cartTotal,
       searchQuery,
       setSearchQuery,
-      searchResults
+      searchResults,
+      clearCart: () => setCart([]),
+      userRole,
+      setUserRole
     }}>
       {children}
     </ShopContext.Provider>

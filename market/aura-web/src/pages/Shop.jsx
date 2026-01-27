@@ -1,32 +1,50 @@
 import React, { useEffect, useState } from 'react';
 import { useShop } from '../context/ShopContext';
 import { motion } from 'framer-motion';
-import { ShoppingBag, Heart } from 'lucide-react';
+import { ShoppingBag, Filter, SlidersHorizontal, ArrowUpDown } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const Shop = ({ category }) => {
   const { products, addToCart } = useShop();
+  const navigate = useNavigate();
   const [items, setItems] = useState([]);
+  const [filteredItems, setFilteredItems] = useState([]);
+
+  // Filters
+  const [priceSort, setPriceSort] = useState('none');
+  const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
     // Map route category to db key
     let dataKey = category;
-    if (category === 'outdoor') dataKey = 'camping'; // Fallback if specific key needed 
+    if (category === 'outdoor') dataKey = 'camping';
     const data = products[dataKey] || [];
     setItems(data);
+    setFilteredItems(data);
   }, [category, products]);
+
+  useEffect(() => {
+    let result = [...items];
+    if (priceSort === 'asc') {
+      result.sort((a, b) => parseFloat(String(a.price).replace('$', '')) - parseFloat(String(b.price).replace('$', '')));
+    } else if (priceSort === 'desc') {
+      result.sort((a, b) => parseFloat(String(b.price).replace('$', '')) - parseFloat(String(a.price).replace('$', '')));
+    }
+    setFilteredItems(result);
+  }, [items, priceSort]);
 
   // Category-specific fallback images
   const fallbacks = {
-    mens: "https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?auto=format&fit=crop&w=600&q=80", // Men's fashion
-    womens: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80", // Women's fashion
-    kids: "https://images.unsplash.com/photo-1519238263496-65260f3e2610?auto=format&fit=crop&w=600&q=80", // Kids fashion
-    outdoor: "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?auto=format&fit=crop&w=600&q=80" // Outdoor gear
+    mens: "https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?auto=format&fit=crop&w=600&q=80",
+    womens: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80",
+    kids: "https://images.unsplash.com/photo-1519238263496-65260f3e2610?auto=format&fit=crop&w=600&q=80",
+    outdoor: "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?auto=format&fit=crop&w=600&q=80"
   };
 
   const handleImageError = (e) => {
-    // Prevent infinite loop if fallback also fails
-    if (e.target.src !== fallbacks[category]) {
-      e.target.src = fallbacks[category] || fallbacks['mens'];
+    const target = e.target;
+    if (target.src !== fallbacks[category]) {
+      target.src = fallbacks[category] || fallbacks['mens'];
     }
   };
 
@@ -37,23 +55,41 @@ const Shop = ({ category }) => {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="section-title"
-          style={{ textTransform: 'uppercase', fontSize: '3rem' }}
+          style={{ textTransform: 'uppercase' }}
         >
           {category === 'mens' ? "Gents' Collection" :
             category === 'womens' ? "Women's Couture" :
               category === 'kids' ? "Junior Edition" : "Outdoor Gear"}
         </motion.h1>
         <p style={{ color: 'var(--color-gold-primary)', letterSpacing: '2px', textTransform: 'uppercase' }}>
-          {items.length} Curated Styles
+          {filteredItems.length} Curated Styles
         </p>
       </header>
+
+      {/* Filter and Sort Bar */}
+      <div className="glass-panel" style={{
+        padding: '15px 30px', margin: '0 0 40px 0', borderRadius: '50px',
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+      }}>
+        <div style={{ display: 'flex', gap: '20px' }}>
+          <button onClick={() => setShowFilters(!showFilters)} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'transparent', color: 'white', border: 'none' }}>
+            <Filter size={18} /> Filters
+          </button>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <span style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem' }}>Sort by:</span>
+          <button onClick={() => setPriceSort(prev => prev === 'asc' ? 'desc' : 'asc')} style={{ display: 'flex', alignItems: 'center', gap: '5px', background: 'transparent', color: 'white' }}>
+            Price <ArrowUpDown size={14} />
+          </button>
+        </div>
+      </div>
 
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
         gap: '40px'
       }}>
-        {items.map((item, idx) => (
+        {filteredItems.map((item, idx) => (
           <motion.div
             key={idx}
             initial={{ opacity: 0, scale: 0.9 }}
@@ -66,11 +102,13 @@ const Shop = ({ category }) => {
               flexDirection: 'column',
               position: 'relative',
               borderRadius: '16px',
-              border: '1px solid rgba(255,255,255,0.05)'
             }}
           >
             {/* Image Section */}
-            <div style={{ position: 'relative', height: '380px', overflow: 'hidden' }}>
+            <div
+              style={{ position: 'relative', height: '380px', overflow: 'hidden', cursor: 'pointer' }}
+              onClick={() => navigate('/product', { state: { product: item } })}
+            >
               <img
                 src={item.img1}
                 onError={handleImageError}
@@ -81,8 +119,8 @@ const Shop = ({ category }) => {
                   objectFit: 'cover',
                   transition: 'transform 0.5s ease'
                 }}
-                onMouseOver={(e) => e.target.style.transform = 'scale(1.1)'}
-                onMouseOut={(e) => e.target.style.transform = 'scale(1.0)'}
+                onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1.0)'}
               />
 
               {/* Overlay Actions */}
@@ -105,12 +143,12 @@ const Shop = ({ category }) => {
                     {item.title}
                   </h3>
                   <p style={{ color: 'var(--color-gold-light)', fontSize: '1.2rem', fontWeight: 'bold' }}>
-                    ${item.price}
+                    ₹{item.price}
                   </p>
                 </div>
 
-                <button
-                  onClick={() => addToCart(item)}
+                <div
+                  onClick={(e) => { e.stopPropagation(); addToCart(item); }}
                   style={{
                     background: 'white', color: 'black', border: 'none',
                     width: '40px', height: '40px', borderRadius: '50%',
@@ -119,7 +157,7 @@ const Shop = ({ category }) => {
                   }}
                 >
                   <ShoppingBag size={18} />
-                </button>
+                </div>
               </div>
             </div>
           </motion.div>

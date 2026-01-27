@@ -3,8 +3,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useShop } from '../../context/ShopContext';
 import { X, Plus, Minus, Trash2 } from 'lucide-react';
 
+import { useNavigate } from 'react-router-dom';
+
 const Cart = () => {
     const { cart, isCartOpen, setIsCartOpen, removeFromCart, updateQty, cartTotal } = useShop();
+    const navigate = useNavigate();
 
     return (
         <AnimatePresence>
@@ -46,15 +49,16 @@ const Cart = () => {
                                         <img src={item.img1} alt="" style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '4px' }} />
                                         <div style={{ flex: 1 }}>
                                             <h4 style={{ fontSize: '0.9rem', marginBottom: '4px' }}>{item.title}</h4>
-                                            <p style={{ color: 'var(--color-gold-primary)', marginBottom: '8px' }}>${item.price}</p>
+                                            <p style={{ color: '#888', fontSize: '0.8rem', margin: 0 }}>Size: {item.size}</p>
+                                            <p style={{ color: 'var(--color-gold-primary)', marginBottom: '8px' }}>₹{item.price}</p>
 
                                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: '#222', borderRadius: '4px', padding: '4px' }}>
-                                                    <button onClick={() => updateQty(item.title, -1)} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer' }}><Minus size={14} /></button>
+                                                    <button onClick={() => updateQty(item.title, item.size, -1)} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer' }}><Minus size={14} /></button>
                                                     <span style={{ fontSize: '0.9rem' }}>{item.qty}</span>
-                                                    <button onClick={() => updateQty(item.title, 1)} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer' }}><Plus size={14} /></button>
+                                                    <button onClick={() => updateQty(item.title, item.size, 1)} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer' }}><Plus size={14} /></button>
                                                 </div>
-                                                <button onClick={() => removeFromCart(item.title)} style={{ background: 'none', border: 'none', color: '#666', cursor: 'pointer' }}>
+                                                <button onClick={() => removeFromCart(item.title, item.size)} style={{ background: 'none', border: 'none', color: '#666', cursor: 'pointer' }}>
                                                     <Trash2 size={18} />
                                                 </button>
                                             </div>
@@ -67,9 +71,9 @@ const Cart = () => {
                         <div style={{ padding: '24px', borderTop: '1px solid #333', background: '#111' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px', fontSize: '1.2rem', fontWeight: 'bold' }}>
                                 <span>TOTAL</span>
-                                <span>${cartTotal.toFixed(2)}</span>
+                                <span>₹{cartTotal.toFixed(2)}</span>
                             </div>
-                            <button className="btn-primary" style={{ width: '100%' }}>
+                            <button className="btn-primary" style={{ width: '100%' }} onClick={() => { setIsCartOpen(false); navigate('/checkout'); }}>
                                 CHECKOUT
                             </button>
                         </div>
